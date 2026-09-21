@@ -15,7 +15,8 @@ QPointF mousePosition(const QMouseEvent* event) {
 }
 
 PreviewWidget::PreviewWidget(QWidget* parent) : QWidget(parent) {
-    setMinimumSize(420, 420);
+    setMinimumSize(220, 220);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setAutoFillBackground(false);
 }
 
@@ -32,8 +33,8 @@ void PreviewWidget::setSelectedIndex(int index) {
 
 QPointF PreviewWidget::toScene(const QPointF& point) const {
     if (!scene_ || scene_->canvasSize.isEmpty()) return {};
-    const double scale = std::min(width() / static_cast<double>(scene_->canvasSize.width()),
-                                  height() / static_cast<double>(scene_->canvasSize.height()));
+    const double scale = std::min(std::max(1, width() - 24) / static_cast<double>(scene_->canvasSize.width()),
+                                  std::max(1, height() - 24) / static_cast<double>(scene_->canvasSize.height()));
     const QSizeF canvasSize(scene_->canvasSize.width() * scale, scene_->canvasSize.height() * scale);
     const QPointF origin((width() - canvasSize.width()) / 2.0, (height() - canvasSize.height()) / 2.0);
     return {(point.x() - origin.x()) / scale, (point.y() - origin.y()) / scale};
@@ -51,8 +52,8 @@ void PreviewWidget::paintEvent(QPaintEvent*) {
     painter.fillRect(rect(), QColor(24, 26, 32));
     if (!scene_ || scene_->canvasSize.isEmpty()) return;
 
-    const double scale = std::min(width() / static_cast<double>(scene_->canvasSize.width()),
-                                  height() / static_cast<double>(scene_->canvasSize.height()));
+    const double scale = std::min(std::max(1, width() - 24) / static_cast<double>(scene_->canvasSize.width()),
+                                  std::max(1, height() - 24) / static_cast<double>(scene_->canvasSize.height()));
     const QSizeF canvasSize(scene_->canvasSize.width() * scale, scene_->canvasSize.height() * scale);
     const QPointF origin((width() - canvasSize.width()) / 2.0, (height() - canvasSize.height()) / 2.0);
     const QRectF canvasRect(origin, canvasSize);

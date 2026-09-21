@@ -13,6 +13,7 @@
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QScrollArea>
 #include <QSignalBlocker>
 #include <QSlider>
 #include <QSpinBox>
@@ -23,11 +24,18 @@
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     setWindowTitle("ForgeUI Studio");
-    resize(920, 640);
+    resize(1280, 820);
+    setMinimumSize(960, 640);
 
     auto* splitter = new QSplitter(this);
     preview_ = new PreviewWidget(splitter);
-    auto* panel = new QWidget(splitter);
+    auto* panelScroll = new QScrollArea(splitter);
+    panelScroll->setWidgetResizable(true);
+    panelScroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    panelScroll->setMinimumWidth(300);
+    panelScroll->setMaximumWidth(380);
+    auto* panel = new QWidget;
+    panelScroll->setWidget(panel);
     auto* layout = new QVBoxLayout(panel);
 
     layout->addWidget(new QLabel("Canvas", panel));
