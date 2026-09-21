@@ -6,6 +6,7 @@
 #include <QSize>
 #include <QString>
 #include <QVector>
+#include <QStringList>
 #include <cstdint>
 
 struct SceneNode {
@@ -40,4 +41,5 @@ public:
     void removeAt(int index);
     void addEntranceAnimation(int nodeIndex);
     QRectF rectAt(int nodeIndex, uint32_t timeMs) const;
+    QStringList validationWarnings() const;
 };

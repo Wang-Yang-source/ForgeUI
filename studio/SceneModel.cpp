@@ -155,3 +155,20 @@ QRectF SceneModel::rectAt(int nodeIndex, uint32_t timeMs) const {
     }
     return result;
 }
+
+QStringList SceneModel::validationWarnings() const {
+    QStringList warnings;
+    const qint64 pixels = static_cast<qint64>(canvasSize.width()) * canvasSize.height();
+    if (canvasSize.width() <= 0 || canvasSize.height() <= 0) warnings << "Canvas dimensions must be positive";
+    if (pixels * 2 > 1024 * 1024) warnings << "RGB565 framebuffer exceeds 1 MiB";
+    for (const SceneNode& node : nodes) {
+        if (!QRectF(QPointF(0, 0), canvasSize).contains(node.rect))
+            warnings << QString("Node '%1' is outside the canvas").arg(node.id);
+    }
+    for (const SceneAnimation& animation : animations) {
+        if (animation.nodeIndex < 0 || animation.nodeIndex >= nodes.size())
+            warnings << "Animation references a missing node";
+        if (animation.durationMs == 0) warnings << "Animation duration must be non-zero";
+    }
+    return warnings;
+}

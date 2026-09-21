@@ -12,6 +12,7 @@ class QPushButton;
 class QSpinBox;
 class QSlider;
 class QTimer;
+class QCheckBox;
 
 class MainWindow final : public QMainWindow {
     Q_OBJECT
@@ -36,5 +37,6 @@ private:
     QPushButton* nodeColor_ = nullptr;
     QSlider* timeline_ = nullptr;
     QTimer* timer_ = nullptr;
+    QCheckBox* loop_ = nullptr;
     StudioLink link_;
 };

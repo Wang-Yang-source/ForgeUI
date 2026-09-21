@@ -88,9 +88,10 @@ and 128×64 panels must remain lightweight.
 - [x] Add animation timeline preview and keyframe data
 - [x] Add play, pause, and scrub controls
 - [ ] Add loop and frame-step controls
-- [ ] Add device profile templates: 52×52, 128×64, HUB75, TFT
+- [x] Add loop and frame-step controls
+- [x] Add device profile templates: 52×52, 128×64, TFT
 - [ ] Add desktop preview controls for brightness, rotation, and pixel scale
-- [ ] Add scene validation and resource budget warnings
+- [x] Add scene validation and resource budget warnings
 - [ ] Add export preview as PNG/GIF
 
 ## 6. Live preview and hot update

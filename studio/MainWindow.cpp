@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QColorDialog>
+#include <QCheckBox>
 #include <QJsonDocument>
 #include <QLabel>
 #include <QLineEdit>
@@ -38,6 +39,12 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     height->setValue(scene_.canvasSize.height());
     layout->addWidget(width);
     layout->addWidget(height);
+    auto* profile = new QComboBox(panel);
+    profile->addItem("Custom", QSize(52, 52));
+    profile->addItem("PixelPad 52x52", QSize(52, 52));
+    profile->addItem("OLED 128x64", QSize(128, 64));
+    profile->addItem("TFT 240x240", QSize(240, 240));
+    layout->addWidget(profile);
 
     auto* addLabel = new QPushButton("Add pixel label", panel);
     auto* addBox = new QPushButton("Add box", panel);
@@ -90,18 +97,30 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     auto* addAnimation = new QPushButton("Add entrance animation", panel);
     auto* play = new QPushButton("Play animation", panel);
     auto* pause = new QPushButton("Pause", panel);
+    auto* stepBack = new QPushButton("Frame -16 ms", panel);
+    auto* stepForward = new QPushButton("Frame +16 ms", panel);
+    loop_ = new QCheckBox("Loop", panel);
     timeline_ = new QSlider(Qt::Horizontal, panel);
     timeline_->setRange(0, 2500);
     timeline_->setValue(0);
     layout->addWidget(addAnimation);
     layout->addWidget(play);
     layout->addWidget(pause);
+    layout->addWidget(stepBack);
+    layout->addWidget(stepForward);
+    layout->addWidget(loop_);
     layout->addWidget(timeline_);
     layout->addStretch();
 
     setCentralWidget(splitter);
     connect(width, &QSpinBox::valueChanged, this, [this](int value) { scene_.canvasSize.setWidth(value); refreshPreview(); });
     connect(height, &QSpinBox::valueChanged, this, [this](int value) { scene_.canvasSize.setHeight(value); refreshPreview(); });
+    connect(profile, qOverload<int>(&QComboBox::currentIndexChanged), this, [this, profile, width, height](int index) {
+        if (index == 0) return;
+        const QSize size = profile->itemData(index).toSize();
+        width->setValue(size.width());
+        height->setValue(size.height());
+    });
     connect(addLabel, &QPushButton::clicked, this, [this] { scene_.addLabel(); refreshPreview(); });
     connect(addBox, &QPushButton::clicked, this, [this] { scene_.addBox(); refreshPreview(); });
     connect(save, &QPushButton::clicked, this, &MainWindow::saveScene);
@@ -184,12 +203,14 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     connect(timer_, &QTimer::timeout, this, [this] {
         const int next = timeline_->value() + 16;
         if (next >= timeline_->maximum()) {
-            timeline_->setValue(timeline_->maximum());
-            timer_->stop();
+            if (loop_->isChecked()) timeline_->setValue(0);
+            else { timeline_->setValue(timeline_->maximum()); timer_->stop(); }
         } else timeline_->setValue(next);
     });
     connect(play, &QPushButton::clicked, this, [this] { timer_->start(); });
     connect(pause, &QPushButton::clicked, this, [this] { timer_->stop(); });
+    connect(stepBack, &QPushButton::clicked, this, [this] { timeline_->setValue(std::max(0, timeline_->value() - 16)); });
+    connect(stepForward, &QPushButton::clicked, this, [this] { timeline_->setValue(std::min(timeline_->maximum(), timeline_->value() + 16)); });
     refreshPreview();
     refreshInspector();
 }
