@@ -10,6 +10,7 @@ driver:
 
 - fixed-size frame canvas with no heap allocation;
 - packed 1-bit canvas for low-memory monochrome panels;
+- packed RGB565 canvas for ESP32 and small color displays;
 - primitive drawing for pixels, rectangles, boxes, and lines;
 - lightweight easing and time-based animation helpers;
 - composable components with explicit `update()` and `draw()` phases;
@@ -72,6 +73,9 @@ ForgeUI is designed as a tiered runtime instead of one mandatory widget stack:
 Features should be opt-in so a small target does not pay for the Full layer. The editor can use one scene model and export either a compact ForgeUI runtime or LVGL C/C++ code.
 
 See [the architecture notes](docs/ARCHITECTURE.md) for the layer boundaries.
+
+ESP32 setup notes are in [docs/ESP32.md](docs/ESP32.md). The planned editor
+hot-update protocol is described in [docs/HOT_RELOAD.md](docs/HOT_RELOAD.md).
 
 ## Roadmap
 

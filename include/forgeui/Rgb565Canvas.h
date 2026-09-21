@@ -2,36 +2,26 @@
 
 #include <algorithm>
 #include <array>
-#include <cstdlib>
 #include <cstdint>
+#include <cstdlib>
+
+#include "Canvas.h"
 
 namespace forgeui {
 
-struct Color {
-    uint8_t r, g, b;
-    static constexpr Color black() { return {0, 0, 0}; }
-    static constexpr Color white() { return {255, 255, 255}; }
-    static constexpr Color cyan() { return {0, 220, 255}; }
-    constexpr uint16_t rgb565() const {
-        return static_cast<uint16_t>(((r & 0xf8u) << 8u) |
-                                     ((g & 0xfcu) << 3u) |
-                                     (b >> 3u));
-    }
-};
-
+// Packed RGB565 target for ESP32-class color displays and small TFT panels.
+// Storage is exactly two bytes per pixel and can be sent directly to a driver.
 template <int Width, int Height>
-class Canvas {
+class Rgb565Canvas {
 public:
     static_assert(Width > 0 && Height > 0, "Canvas dimensions must be positive");
     static constexpr size_t pixelCount = static_cast<size_t>(Width) * Height;
 
-    void clear(Color color = Color::black()) {
-        pixels_.fill(color);
-    }
+    void clear(Color color = Color::black()) { pixels_.fill(color.rgb565()); }
 
     void pixel(int x, int y, Color color) {
         if (!inside(x, y)) return;
-        pixels_[static_cast<size_t>(y) * Width + x] = color;
+        pixels_[static_cast<size_t>(y) * Width + static_cast<size_t>(x)] = color.rgb565();
     }
 
     void fill(int x0, int y0, int x1, int y1, Color color) {
@@ -40,8 +30,10 @@ public:
         const int top = std::max(0, std::min(y0, y1));
         const int bottom = std::min(Height - 1, std::max(y0, y1));
         if (left > right || top > bottom) return;
+        const uint16_t packed = color.rgb565();
         for (int y = top; y <= bottom; ++y)
-            for (int x = left; x <= right; ++x) pixel(x, y, color);
+            for (int x = left; x <= right; ++x)
+                pixels_[static_cast<size_t>(y) * Width + static_cast<size_t>(x)] = packed;
     }
 
     void box(int x0, int y0, int x1, int y1, Color color) {
@@ -64,14 +56,14 @@ public:
         }
     }
 
-    const Color* data() const { return pixels_.data(); }
-    Color* data() { return pixels_.data(); }
+    const uint16_t* data() const { return pixels_.data(); }
+    uint16_t* data() { return pixels_.data(); }
 
 private:
     static constexpr bool inside(int x, int y) {
         return x >= 0 && x < Width && y >= 0 && y < Height;
     }
-    std::array<Color, pixelCount> pixels_{};
+    std::array<uint16_t, pixelCount> pixels_{};
 };
 
 } // namespace forgeui

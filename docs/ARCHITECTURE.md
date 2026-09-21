@@ -36,6 +36,6 @@ is an optional integration target, not a dependency of the Nano/Core runtime.
 
 ## Planned interfaces
 
-The next layers should add a `DisplayBackend` concept, focus navigation, a
-dirty-region renderer, and an LVGL exporter. These should be separate headers
+The next layers should add focus navigation, a dirty-region renderer, and an
+LVGL exporter. These should be separate headers
 so a 52×52 firmware build can include only Nano/Core pieces.

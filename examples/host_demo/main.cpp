@@ -38,6 +38,12 @@ int main() {
     assert(monoView.pixel(0, 0));
     assert(!monoView.pixel(3, 3));
 
+    forgeui::Rgb565Canvas<4, 4> colorCanvas;
+    colorCanvas.clear(forgeui::Color{255, 0, 0});
+    assert(colorCanvas.data()[0] == 0xf800);
+    colorCanvas.pixel(2, 2, forgeui::Color{0, 255, 0});
+    assert(colorCanvas.data()[10] == 0x07e0);
+
     int updates = 0;
     Marker<forgeui::MonoCanvas<8, 8>> marker(updates);
     forgeui::StaticContainer<forgeui::MonoCanvas<8, 8>, 2> container;
