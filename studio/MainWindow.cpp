@@ -5,6 +5,7 @@
 #include <QComboBox>
 #include <QFile>
 #include <QFileDialog>
+#include <QColorDialog>
 #include <QJsonDocument>
 #include <QLabel>
 #include <QLineEdit>
@@ -72,6 +73,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     nodeText_ = new QLineEdit(panel);
     nodeText_->setPlaceholderText("Label text");
     layout->addWidget(nodeText_);
+    nodeColor_ = new QPushButton("Change color", panel);
+    layout->addWidget(nodeColor_);
     auto* remove = new QPushButton("Delete selected", panel);
     layout->addWidget(remove);
     layout->addStretch();
@@ -112,6 +115,16 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
         ++scene_.revision;
         refreshPreview();
     });
+    connect(nodeColor_, &QPushButton::clicked, this, [this] {
+        const int index = selectedIndex();
+        if (index < 0) return;
+        const QColor color = QColorDialog::getColor(scene_.nodes[index].color, this, "Node color");
+        if (!color.isValid()) return;
+        scene_.nodes[index].color = color;
+        ++scene_.revision;
+        refreshPreview();
+        refreshInspector();
+    });
     connect(remove, &QPushButton::clicked, this, [this] {
         const int index = selectedIndex();
         if (index < 0) return;
@@ -134,7 +147,7 @@ void MainWindow::refreshInspector() {
     selectedLabel_->setText(enabled ? scene_.nodes[index].id : "No node selected");
     for (QWidget* widget : {static_cast<QWidget*>(nodeX_), static_cast<QWidget*>(nodeY_),
                             static_cast<QWidget*>(nodeWidth_), static_cast<QWidget*>(nodeHeight_),
-                            static_cast<QWidget*>(nodeText_)}) widget->setEnabled(enabled);
+                            static_cast<QWidget*>(nodeText_), static_cast<QWidget*>(nodeColor_)}) widget->setEnabled(enabled);
     if (!enabled) return;
     const QRectF rect = scene_.nodes[index].rect;
     const QSignalBlocker blockX(nodeX_);
@@ -147,6 +160,7 @@ void MainWindow::refreshInspector() {
     nodeWidth_->setValue(static_cast<int>(rect.width()));
     nodeHeight_->setValue(static_cast<int>(rect.height()));
     nodeText_->setText(scene_.nodes[index].text);
+    nodeColor_->setText(QString("Color: %1").arg(scene_.nodes[index].color.name(QColor::HexRgb)));
 }
 
 void MainWindow::saveScene() {

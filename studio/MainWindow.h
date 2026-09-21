@@ -8,6 +8,7 @@
 class PreviewWidget;
 class QLineEdit;
 class QLabel;
+class QPushButton;
 class QSpinBox;
 
 class MainWindow final : public QMainWindow {
@@ -30,5 +31,6 @@ private:
     QSpinBox* nodeWidth_ = nullptr;
     QSpinBox* nodeHeight_ = nullptr;
     QLineEdit* nodeText_ = nullptr;
+    QPushButton* nodeColor_ = nullptr;
     StudioLink link_;
 };

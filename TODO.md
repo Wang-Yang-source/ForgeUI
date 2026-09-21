@@ -79,7 +79,8 @@ and 128×64 panels must remain lightweight.
 - [ ] Add resize handles, snap-to-grid, and multi-select
 - [ ] Add layers/tree panel
 - [x] Add basic property inspector for geometry and text
-- [ ] Add property inspector for colors and styles
+- [x] Add property inspector for node colors
+- [ ] Add property inspector for styles
 - [ ] Add color palette optimized for RGB565 and LED panels
 - [ ] Add font and image asset browser
 - [ ] Add animation timeline and keyframe editing
