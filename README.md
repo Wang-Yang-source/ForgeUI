@@ -76,6 +76,8 @@ See [the architecture notes](docs/ARCHITECTURE.md) for the layer boundaries.
 
 ESP32 setup notes are in [docs/ESP32.md](docs/ESP32.md). The planned editor
 hot-update protocol is described in [docs/HOT_RELOAD.md](docs/HOT_RELOAD.md).
+The current desktop editor slice and technology decision are documented in
+[docs/STUDIO.md](docs/STUDIO.md).
 
 ## Roadmap
 

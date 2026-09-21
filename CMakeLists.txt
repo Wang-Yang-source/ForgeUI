@@ -12,3 +12,33 @@ if(FORGEUI_BUILD_EXAMPLES)
     add_executable(forgeui_host_demo examples/host_demo/main.cpp)
     target_link_libraries(forgeui_host_demo PRIVATE forgeui)
 endif()
+
+option(FORGEUI_BUILD_STUDIO "Build the optional Qt desktop editor" ON)
+if(FORGEUI_BUILD_STUDIO)
+    find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui Widgets SerialPort QUIET)
+    if(QT_FOUND)
+        find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets SerialPort REQUIRED)
+        set(CMAKE_AUTOMOC ON)
+        add_executable(forgeui_studio
+            studio/main.cpp
+            studio/MainWindow.cpp
+            studio/MainWindow.h
+            studio/PreviewWidget.cpp
+            studio/PreviewWidget.h
+            studio/SceneModel.cpp
+            studio/SceneModel.h
+            studio/StudioLink.cpp
+            studio/StudioLink.h
+        )
+        target_link_libraries(forgeui_studio PRIVATE
+            forgeui
+            Qt${QT_VERSION_MAJOR}::Core
+            Qt${QT_VERSION_MAJOR}::Gui
+            Qt${QT_VERSION_MAJOR}::Widgets
+            Qt${QT_VERSION_MAJOR}::SerialPort
+        )
+        target_compile_features(forgeui_studio PRIVATE cxx_std_17)
+    else()
+        message(STATUS "Qt 5/6 not found; skipping optional forgeui_studio")
+    endif()
+endif()
