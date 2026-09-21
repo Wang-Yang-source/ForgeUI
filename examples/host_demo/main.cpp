@@ -52,5 +52,16 @@ int main() {
     assert(updates == 1);
     assert(container.handle({forgeui::InputType::Click, 0, 42}));
 
+    int32_t logoY = 0;
+    int32_t typedChars = 0;
+    forgeui::Timeline<4> intro;
+    assert(intro.add(logoY, -12, 18, 0, 800));
+    assert(intro.add(typedChars, 0, 7, 250, 1200, forgeui::Easing::EaseOut));
+    intro.start(1000);
+    intro.update(1250);
+    assert(logoY > -12 && typedChars == 0);
+    intro.update(2200);
+    assert(logoY == 18 && typedChars > 0);
+
     std::cout << "ForgeUI host demo passed\n";
 }

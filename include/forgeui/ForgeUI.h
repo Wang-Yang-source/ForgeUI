@@ -5,6 +5,7 @@
 #include "Rgb565Canvas.h"
 #include "Display.h"
 #include "Tween.h"
+#include "Timeline.h"
 #include "Component.h"
 #include "Input.h"
 #include "Layout.h"
