@@ -18,6 +18,8 @@ and 128×64 panels must remain lightweight.
 - [x] Custom canvas size and nearest-pixel preview
 - [x] JSON scene save/load
 - [x] Serial scene packet sender
+- [x] Shared FUI1 packet codec and CRC32 validation
+- [x] Allocation-free ESP32 transport receiver
 - [x] ESP32 and hot-update architecture notes
 
 ## 1. Animation engine
@@ -87,8 +89,8 @@ and 128×64 panels must remain lightweight.
 
 ## 6. Live preview and hot update
 
-- [ ] Implement ESP32 `FUI1` receiver
-- [ ] Validate packet version, payload length, and CRC32
+- [x] Implement ESP32 `FUI1` receiver
+- [x] Validate packet version, payload length, and CRC32
 - [ ] Add ACK/NACK and error messages
 - [ ] Add scene revision conflict handling
 - [ ] Add double-buffered scene replacement at frame boundaries

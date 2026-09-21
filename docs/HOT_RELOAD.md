@@ -20,6 +20,23 @@ compact binary format for production devices. Images and fonts should live in
 LittleFS/FATFS and be referenced by content hash, so changing a label does not
 re-upload every asset.
 
+The shared packet codec is available in `include/forgeui/Protocol.h`. ESP32
+transport code can feed incoming UART, USB, or WebSocket bytes into the fixed-
+capacity `forgeui::esp32::SceneReceiver` from
+`examples/esp32/SceneReceiver.h`. It only exposes a scene after the complete
+packet and CRC32 have been validated.
+
+The current packet is little-endian and has this layout:
+
+```text
+4 bytes  FUI1
+1 byte   protocol version
+4 bytes  scene revision
+4 bytes  payload length
+4 bytes  CRC32(payload)
+N bytes  JSON or compact scene payload
+```
+
 ## Firmware OTA
 
 Firmware replacement is a separate ESP32 OTA feature using the platform's

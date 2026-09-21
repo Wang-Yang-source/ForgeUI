@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(ForgeUI LANGUAGES CXX)
 
+include(CTest)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -11,6 +13,13 @@ option(FORGEUI_BUILD_EXAMPLES "Build host examples" ON)
 if(FORGEUI_BUILD_EXAMPLES)
     add_executable(forgeui_host_demo examples/host_demo/main.cpp)
     target_link_libraries(forgeui_host_demo PRIVATE forgeui)
+endif()
+
+if(BUILD_TESTING)
+    add_executable(forgeui_protocol_test tests/protocol_test.cpp)
+    target_link_libraries(forgeui_protocol_test PRIVATE forgeui)
+    target_include_directories(forgeui_protocol_test PRIVATE .)
+    add_test(NAME forgeui_protocol_test COMMAND forgeui_protocol_test)
 endif()
 
 option(FORGEUI_BUILD_STUDIO "Build the optional Qt desktop editor" ON)
