@@ -99,7 +99,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     layout->addWidget(selectedLabel_);
     auto makeSpin = [panel](int value) {
         auto* spin = new QSpinBox(panel);
-        spin->setRange(-4096, 4096);
+        spin->setRange(1, 4096);
         spin->setValue(value);
         return spin;
     };
@@ -185,8 +185,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
         const int index = selectedIndex();
         if (index < 0) return;
         SceneNode& node = scene_.nodes[index];
-        node.rect.setX(nodeX_->value()); node.rect.setY(nodeY_->value());
-        node.rect.setWidth(nodeWidth_->value()); node.rect.setHeight(nodeHeight_->value());
+        node.rect.setX(qMax(0, nodeX_->value())); node.rect.setY(qMax(0, nodeY_->value()));
+        node.rect.setWidth(qMax(1, nodeWidth_->value())); node.rect.setHeight(qMax(1, nodeHeight_->value()));
         ++scene_.revision;
         refreshPreview();
     };

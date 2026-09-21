@@ -3,6 +3,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QtGlobal>
+#include <cmath>
 
 namespace {
 QPointF mousePosition(const QMouseEvent* event) {
@@ -111,7 +112,12 @@ void PreviewWidget::mousePressEvent(QMouseEvent* event) {
 void PreviewWidget::mouseMoveEvent(QMouseEvent* event) {
     if (!dragging_ || !scene_ || selectedIndex_ < 0) return;
     const QPointF point = toScene(mousePosition(event));
-    scene_->nodes[selectedIndex_].rect.moveTopLeft(point - dragOffset_);
+    QRectF& rect = scene_->nodes[selectedIndex_].rect;
+    const QPointF snapped(std::floor(point.x() - dragOffset_.x() + 0.5),
+                          std::floor(point.y() - dragOffset_.y() + 0.5));
+    rect.moveTopLeft(snapped);
+    rect.setWidth(std::max<qreal>(1, rect.width()));
+    rect.setHeight(std::max<qreal>(1, rect.height()));
     ++scene_->revision;
     update();
     if (onSceneChanged) onSceneChanged();

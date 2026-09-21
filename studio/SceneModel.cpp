@@ -69,7 +69,7 @@ bool SceneModel::fromJson(const QJsonObject& root, QString* error) {
                            item.value("width").toDouble(), item.value("height").toDouble());
         node.text = item.value("text").toString();
         node.color = QColor(item.value("color").toString("#ff00dcff"));
-        if (node.id.isEmpty() || node.rect.width() < 0 || node.rect.height() < 0) {
+        if (node.id.isEmpty() || node.rect.width() < 1 || node.rect.height() < 1) {
             if (error) *error = "Invalid scene node";
             return false;
         }
@@ -120,7 +120,9 @@ void SceneModel::addBox() {
     SceneNode node;
     node.id = QString("box_%1").arg(nodes.size() + 1);
     node.type = "box";
-    node.rect = QRectF(3, 3, canvasSize.width() - 6, canvasSize.height() - 6);
+    const qreal x = qMax<qreal>(0, (canvasSize.width() - 1) / 2.0);
+    const qreal y = qMax<qreal>(0, (canvasSize.height() - 1) / 2.0);
+    node.rect = QRectF(x, y, 1, 1);
     nodes.append(node);
     ++revision;
 }
