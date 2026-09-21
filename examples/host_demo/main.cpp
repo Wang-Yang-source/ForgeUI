@@ -52,6 +52,14 @@ int main() {
     assert(updates == 1);
     assert(container.handle({forgeui::InputType::Click, 0, 42}));
 
+    forgeui::Rgb888Canvas<2, 2> rgb;
+    rgb.clear(forgeui::Color{1, 2, 3});
+    assert(rgb.data()[0] == 1 && rgb.data()[1] == 2 && rgb.data()[2] == 3);
+    const uint16_t uneven[] = {90, 40, 180, 70};
+    forgeui::Typewriter<8> typewriter;
+    assert(typewriter.configure(uneven, 4, 100));
+    assert(typewriter.visible(190) == 1 && typewriter.visible(230) == 2);
+
     int32_t logoY = 0;
     int32_t typedChars = 0;
     forgeui::Timeline<4> intro;

@@ -3,6 +3,7 @@
 #include <cstring>
 
 #include <forgeui/Protocol.h>
+#include <forgeui/AssetStore.h>
 #include <examples/esp32/SceneReceiver.h>
 
 int main() {
@@ -33,5 +34,22 @@ int main() {
 
     packet[forgeui::protocol::headerSize] ^= 1u;
     assert(!forgeui::protocol::decodeScene(packet, forgeui::protocol::encodedSize(sizeof(text) - 1), view));
+
+    const uint8_t asset[] = {1, 2, 3, 4, 5, 6};
+    const uint32_t assetCrc = forgeui::protocol::crc32(asset, sizeof(asset));
+    uint8_t a[128]{};
+    assert(forgeui::protocol::encodeAssetChunk(a, sizeof(a), 7, 0, sizeof(asset),
+        forgeui::protocol::AssetFormat::Rgb888, 2, 1, assetCrc, asset, 3));
+    uint8_t b[128]{};
+    assert(forgeui::protocol::encodeAssetChunk(b, sizeof(b), 7, 3, sizeof(asset),
+        forgeui::protocol::AssetFormat::Rgb888, 2, 1, assetCrc, asset + 3, 3));
+    forgeui::AssetStore<2, 16> assets;
+    assert(assets.applyChunk(a, forgeui::protocol::encodedAssetSize(3)));
+    assert(!assets.contains(7));
+    assert(assets.applyChunk(b, forgeui::protocol::encodedAssetSize(3)));
+    assert(assets.contains(7) && assets.view(7).size == sizeof(asset));
+    assert(std::memcmp(assets.view(7).data, asset, sizeof(asset)) == 0);
+    b[forgeui::protocol::assetHeaderSize] ^= 1u;
+    assert(!assets.applyChunk(b, forgeui::protocol::encodedAssetSize(3)));
     return 0;
 }

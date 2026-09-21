@@ -32,8 +32,9 @@ and 128×64 panels must remain lightweight.
 - [ ] Add per-track completion state and cancellation
 - [ ] Add deterministic integer/fixed-point easing curves
 - [ ] Add typewriter animation with uneven, configurable character timing
+- [x] Add uneven-delay typewriter track primitive
 - [ ] Add dirty-region reporting for animated components
-- [ ] Add animation golden tests for 2.5-second boot sequences
+- [x] Add animation golden tests for 2.5-second boot sequences
 - [ ] Add frame pacing independent from animation time
 
 ## 2. Embedded runtime
@@ -42,7 +43,7 @@ and 128×64 panels must remain lightweight.
 - [ ] Add RGB565 byte-order and rotation helpers
 - [ ] Add dirty rectangle collection and region merging
 - [ ] Add optional double-buffer and partial-flush support
-- [ ] Add bitmap and packed-pixel asset formats
+- [x] Add bitmap and packed-pixel asset formats
 - [ ] Add compact bitmap-font renderer
 - [ ] Add image clipping and nearest-neighbor scaling
 - [ ] Add focus navigation for buttons, lists, and encoder input
@@ -56,7 +57,8 @@ and 128×64 panels must remain lightweight.
 - [ ] Add an Arduino-ESP32 example
 - [ ] Add an `esp_lcd` RGB565 adapter
 - [ ] Add SPI DMA flush support
-- [ ] Add HUB75 scan/DMA backend boundary
+- [x] Add HUB75 scan/DMA backend boundary
+- [x] Add RGB888/HUB75 frame submission boundary
 - [ ] Add ESP32 input adapters for GPIO buttons and rotary encoders
 - [ ] Add LittleFS asset loading
 - [ ] Add watchdog-safe rendering and reconnect handling
@@ -71,7 +73,7 @@ and 128×64 panels must remain lightweight.
 - [ ] Add style tokens and reusable themes
 - [ ] Add constraints and responsive layout properties
 - [ ] Add scene migration between schema versions
-- [ ] Add asset IDs and content hashes
+- [x] Add asset IDs and content hashes
 - [ ] Add undo/redo command history
 
 ## 5. Desktop editor
@@ -98,12 +100,12 @@ and 128×64 panels must remain lightweight.
 
 - [x] Implement ESP32 `FUI1` receiver
 - [x] Validate packet version, payload length, and CRC32
-- [ ] Add ACK/NACK and error messages
+- [x] Add ACK/NACK and error messages
 - [ ] Add scene revision conflict handling
 - [x] Add double-buffered scene replacement at frame boundaries
 - [ ] Add serial auto-detection and reconnect
 - [ ] Add Wi-Fi transport over WebSocket or HTTP
-- [ ] Add LittleFS asset upload by content hash
+- [x] Add serial asset upload by content hash
 - [ ] Add a safe-mode scene if an update fails
 - [ ] Keep firmware OTA separate from UI scene hot reload
 
@@ -122,7 +124,7 @@ and 128×64 panels must remain lightweight.
 
 - [ ] Add CTest unit tests for canvas, timeline, scene model, and packet codec
 - [ ] Add host-side golden-frame tests
-- [ ] Add malformed JSON and malformed packet tests
+- [x] Add malformed JSON and malformed packet tests
 - [ ] Add sanitizer builds for the desktop editor
 - [ ] Add cross-compilation checks for ESP-IDF and Arduino
 - [ ] Add CI for Linux, Windows, and macOS editor builds
