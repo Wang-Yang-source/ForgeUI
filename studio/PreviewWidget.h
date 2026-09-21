@@ -12,6 +12,7 @@ public:
     void setScene(SceneModel* scene);
     int selectedIndex() const { return selectedIndex_; }
     void setSelectedIndex(int index);
+    void setPreviewTime(uint32_t timeMs);
     std::function<void(int)> onSelectionChanged;
     std::function<void()> onSceneChanged;
 
@@ -29,4 +30,5 @@ private:
     int selectedIndex_ = -1;
     QPointF dragOffset_;
     bool dragging_ = false;
+    uint32_t previewTimeMs_ = 0;
 };

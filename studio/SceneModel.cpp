@@ -3,6 +3,14 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 
+namespace {
+int sample(int from, int to, uint32_t elapsed, uint32_t duration) {
+    if (elapsed >= duration) return to;
+    const int64_t delta = static_cast<int64_t>(to) - from;
+    return static_cast<int>(from + (delta * elapsed) / duration);
+}
+}
+
 QJsonObject SceneModel::toJson() const {
     QJsonObject root;
     root["version"] = 1;
@@ -24,6 +32,18 @@ QJsonObject SceneModel::toJson() const {
         items.append(item);
     }
     root["nodes"] = items;
+    QJsonArray animations;
+    for (const SceneAnimation& animation : this->animations) {
+        QJsonObject item;
+        item["node"] = animation.nodeIndex;
+        item["property"] = animation.property;
+        item["from"] = animation.from;
+        item["to"] = animation.to;
+        item["delay"] = static_cast<qint64>(animation.delayMs);
+        item["duration"] = static_cast<qint64>(animation.durationMs);
+        animations.append(item);
+    }
+    root["animations"] = animations;
     return root;
 }
 
@@ -53,8 +73,26 @@ bool SceneModel::fromJson(const QJsonObject& root, QString* error) {
         parsed.append(node);
     }
 
+    QVector<SceneAnimation> parsedAnimations;
+    for (const QJsonValue& value : root.value("animations").toArray()) {
+        const QJsonObject item = value.toObject();
+        SceneAnimation animation;
+        animation.nodeIndex = item.value("node").toInt(-1);
+        animation.property = item.value("property").toString("y");
+        animation.from = item.value("from").toInt();
+        animation.to = item.value("to").toInt();
+        animation.delayMs = static_cast<uint32_t>(item.value("delay").toInteger(0));
+        animation.durationMs = static_cast<uint32_t>(item.value("duration").toInteger(800));
+        if (animation.nodeIndex < 0 || animation.nodeIndex >= parsed.size() || animation.durationMs == 0) {
+            if (error) *error = "Invalid scene animation";
+            return false;
+        }
+        parsedAnimations.append(animation);
+    }
+
     canvasSize = QSize(width, height);
     nodes = parsed;
+    animations = parsedAnimations;
     revision = static_cast<quint32>(root.value("revision").toInteger(1));
     return true;
 }
@@ -85,5 +123,35 @@ void SceneModel::addBox() {
 void SceneModel::removeAt(int index) {
     if (index < 0 || index >= nodes.size()) return;
     nodes.removeAt(index);
+    for (int i = animations.size() - 1; i >= 0; --i) {
+        if (animations[i].nodeIndex == index) animations.removeAt(i);
+        else if (animations[i].nodeIndex > index) --animations[i].nodeIndex;
+    }
     ++revision;
+}
+
+void SceneModel::addEntranceAnimation(int nodeIndex) {
+    if (nodeIndex < 0 || nodeIndex >= nodes.size()) return;
+    SceneAnimation animation;
+    animation.nodeIndex = nodeIndex;
+    animation.property = "y";
+    animation.to = static_cast<int>(nodes[nodeIndex].rect.y());
+    animation.from = animation.to - 12;
+    animation.durationMs = 800;
+    animations.append(animation);
+    ++revision;
+}
+
+QRectF SceneModel::rectAt(int nodeIndex, uint32_t timeMs) const {
+    if (nodeIndex < 0 || nodeIndex >= nodes.size()) return {};
+    QRectF result = nodes[nodeIndex].rect;
+    for (const SceneAnimation& animation : animations) {
+        if (animation.nodeIndex != nodeIndex || timeMs < animation.delayMs) continue;
+        const int value = sample(animation.from, animation.to, timeMs - animation.delayMs, animation.durationMs);
+        if (animation.property == "x") result.moveLeft(value);
+        else if (animation.property == "y") result.moveTop(value);
+        else if (animation.property == "width") result.setWidth(value);
+        else if (animation.property == "height") result.setHeight(value);
+    }
+    return result;
 }

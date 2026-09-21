@@ -85,8 +85,9 @@ and 128×64 panels must remain lightweight.
 - [ ] Add property inspector for styles
 - [ ] Add color palette optimized for RGB565 and LED panels
 - [ ] Add font and image asset browser
-- [ ] Add animation timeline and keyframe editing
-- [ ] Add play, pause, scrub, loop, and frame-step controls
+- [x] Add animation timeline preview and keyframe data
+- [x] Add play, pause, and scrub controls
+- [ ] Add loop and frame-step controls
 - [ ] Add device profile templates: 52×52, 128×64, HUB75, TFT
 - [ ] Add desktop preview controls for brightness, rotation, and pixel scale
 - [ ] Add scene validation and resource budget warnings

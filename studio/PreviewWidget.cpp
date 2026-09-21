@@ -42,7 +42,7 @@ QPointF PreviewWidget::toScene(const QPointF& point) const {
 int PreviewWidget::hitTest(const QPointF& point) const {
     if (!scene_) return -1;
     for (int index = scene_->nodes.size() - 1; index >= 0; --index)
-        if (scene_->nodes[index].rect.contains(point)) return index;
+        if (scene_->rectAt(index, previewTimeMs_).contains(point)) return index;
     return -1;
 }
 
@@ -72,10 +72,11 @@ void PreviewWidget::paintEvent(QPaintEvent*) {
 
     for (int index = 0; index < scene_->nodes.size(); ++index) {
         const SceneNode& node = scene_->nodes[index];
-        const QRectF r(origin.x() + node.rect.x() * scale,
-                       origin.y() + node.rect.y() * scale,
-                       node.rect.width() * scale,
-                       node.rect.height() * scale);
+        const QRectF animated = scene_->rectAt(index, previewTimeMs_);
+        const QRectF r(origin.x() + animated.x() * scale,
+                       origin.y() + animated.y() * scale,
+                       animated.width() * scale,
+                       animated.height() * scale);
         painter.setPen(node.color);
         if (node.type == "label") {
             painter.setFont(QFont("Monospace", std::max(6, static_cast<int>(scale * 1.5)), QFont::Normal));
@@ -88,6 +89,11 @@ void PreviewWidget::paintEvent(QPaintEvent*) {
             painter.drawRect(r.adjusted(-2, -2, 1, 1));
         }
     }
+}
+
+void PreviewWidget::setPreviewTime(uint32_t timeMs) {
+    previewTimeMs_ = timeMs;
+    update();
 }
 
 void PreviewWidget::mousePressEvent(QMouseEvent* event) {

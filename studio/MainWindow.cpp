@@ -13,8 +13,10 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QSignalBlocker>
+#include <QSlider>
 #include <QSpinBox>
 #include <QSplitter>
+#include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
 
@@ -84,6 +86,17 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     layout->addWidget(nodeColor_);
     auto* remove = new QPushButton("Delete selected", panel);
     layout->addWidget(remove);
+    layout->addSpacing(12);
+    auto* addAnimation = new QPushButton("Add entrance animation", panel);
+    auto* play = new QPushButton("Play animation", panel);
+    auto* pause = new QPushButton("Pause", panel);
+    timeline_ = new QSlider(Qt::Horizontal, panel);
+    timeline_->setRange(0, 2500);
+    timeline_->setValue(0);
+    layout->addWidget(addAnimation);
+    layout->addWidget(play);
+    layout->addWidget(pause);
+    layout->addWidget(timeline_);
     layout->addStretch();
 
     setCentralWidget(splitter);
@@ -159,6 +172,24 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
         refreshPreview();
         refreshInspector();
     });
+    connect(addAnimation, &QPushButton::clicked, this, [this] {
+        scene_.addEntranceAnimation(selectedIndex());
+        refreshPreview();
+    });
+    connect(timeline_, &QSlider::valueChanged, this, [this](int value) {
+        preview_->setPreviewTime(static_cast<uint32_t>(value));
+    });
+    timer_ = new QTimer(this);
+    timer_->setInterval(16);
+    connect(timer_, &QTimer::timeout, this, [this] {
+        const int next = timeline_->value() + 16;
+        if (next >= timeline_->maximum()) {
+            timeline_->setValue(timeline_->maximum());
+            timer_->stop();
+        } else timeline_->setValue(next);
+    });
+    connect(play, &QPushButton::clicked, this, [this] { timer_->start(); });
+    connect(pause, &QPushButton::clicked, this, [this] { timer_->stop(); });
     refreshPreview();
     refreshInspector();
 }
