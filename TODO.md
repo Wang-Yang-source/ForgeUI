@@ -17,6 +17,7 @@ and 128×64 panels must remain lightweight.
 - [x] Qt desktop editor vertical slice
 - [x] Custom canvas size and nearest-pixel preview
 - [x] JSON scene save/load
+- [x] Basic ForgeUI C++ scene export
 - [x] Serial scene packet sender
 - [x] Shared FUI1 packet codec and CRC32 validation
 - [x] Allocation-free ESP32 transport receiver
@@ -105,7 +106,7 @@ and 128×64 panels must remain lightweight.
 
 ## 7. Exporters
 
-- [ ] Export compact ForgeUI C++ scene code
+- [x] Export compact ForgeUI C++ scene code
 - [ ] Export static RGB565 and monochrome assets
 - [ ] Export LVGL C/C++ widget trees
 - [ ] Export Slint scene files or generated bindings where licensing permits

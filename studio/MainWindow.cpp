@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 
 #include "PreviewWidget.h"
+#include "Exporter.h"
 
 #include <QComboBox>
 #include <QFile>
@@ -40,6 +41,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     auto* addBox = new QPushButton("Add box", panel);
     auto* save = new QPushButton("Save scene", panel);
     auto* load = new QPushButton("Load scene", panel);
+    auto* exportForgeUi = new QPushButton("Export ForgeUI C++", panel);
     auto* ports = new QComboBox(panel);
     ports->addItems(link_.ports());
     auto* connectButton = new QPushButton("Connect serial", panel);
@@ -49,6 +51,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     layout->addSpacing(12);
     layout->addWidget(save);
     layout->addWidget(load);
+    layout->addWidget(exportForgeUi);
     layout->addSpacing(12);
     layout->addWidget(ports);
     layout->addWidget(connectButton);
@@ -86,6 +89,13 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     connect(addBox, &QPushButton::clicked, this, [this] { scene_.addBox(); refreshPreview(); });
     connect(save, &QPushButton::clicked, this, &MainWindow::saveScene);
     connect(load, &QPushButton::clicked, this, &MainWindow::loadScene);
+    connect(exportForgeUi, &QPushButton::clicked, this, [this] {
+        const QString path = QFileDialog::getSaveFileName(this, "Export ForgeUI C++", {}, "C++ source (*.cpp)");
+        if (path.isEmpty()) return;
+        QFile file(path);
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+            file.write(forgeui_studio::exportForgeUiSource(scene_).toUtf8());
+    });
     connect(connectButton, &QPushButton::clicked, this, [this, ports] {
         if (!link_.open(ports->currentText())) QMessageBox::warning(this, "ForgeUI", "Unable to open serial port");
     });

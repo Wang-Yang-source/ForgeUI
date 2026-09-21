@@ -34,6 +34,8 @@ if(FORGEUI_BUILD_STUDIO)
             studio/MainWindow.h
             studio/PreviewWidget.cpp
             studio/PreviewWidget.h
+            studio/Exporter.cpp
+            studio/Exporter.h
             studio/SceneModel.cpp
             studio/SceneModel.h
             studio/StudioLink.cpp
