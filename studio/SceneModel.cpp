@@ -32,6 +32,7 @@ QJsonObject SceneModel::toJson() const {
         item["height"] = node.rect.height();
         item["text"] = node.text;
         item["color"] = node.color.name(QColor::HexArgb);
+        item["filled"] = node.filled;
         items.append(item);
     }
     root["nodes"] = items;
@@ -69,6 +70,7 @@ bool SceneModel::fromJson(const QJsonObject& root, QString* error) {
                            item.value("width").toDouble(), item.value("height").toDouble());
         node.text = item.value("text").toString();
         node.color = QColor(item.value("color").toString("#ff00dcff"));
+        node.filled = item.value("filled").toBool(true);
         if (node.id.isEmpty() || node.rect.width() < 1 || node.rect.height() < 1) {
             if (error) *error = "Invalid scene node";
             return false;

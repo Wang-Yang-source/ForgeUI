@@ -35,6 +35,7 @@ private:
     QSpinBox* nodeHeight_ = nullptr;
     QLineEdit* nodeText_ = nullptr;
     QPushButton* nodeColor_ = nullptr;
+    QCheckBox* nodeFilled_ = nullptr;
     QSlider* timeline_ = nullptr;
     QTimer* timer_ = nullptr;
     QCheckBox* loop_ = nullptr;

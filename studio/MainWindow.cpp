@@ -116,6 +116,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     layout->addWidget(nodeText_);
     nodeColor_ = new QPushButton("Change color", panel);
     layout->addWidget(nodeColor_);
+    nodeFilled_ = new QCheckBox("Fill shape", panel);
+    layout->addWidget(nodeFilled_);
     auto* remove = new QPushButton("Delete selected", panel);
     layout->addWidget(remove);
     layout->addSpacing(12);
@@ -211,6 +213,13 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
         refreshPreview();
         refreshInspector();
     });
+    connect(nodeFilled_, &QCheckBox::toggled, this, [this](bool filled) {
+        const int index = selectedIndex();
+        if (index < 0 || scene_.nodes[index].type == "label") return;
+        scene_.nodes[index].filled = filled;
+        ++scene_.revision;
+        refreshPreview();
+    });
     connect(remove, &QPushButton::clicked, this, [this] {
         const int index = selectedIndex();
         if (index < 0) return;
@@ -253,7 +262,8 @@ void MainWindow::refreshInspector() {
     selectedLabel_->setText(enabled ? scene_.nodes[index].id : "No node selected");
     for (QWidget* widget : {static_cast<QWidget*>(nodeX_), static_cast<QWidget*>(nodeY_),
                             static_cast<QWidget*>(nodeWidth_), static_cast<QWidget*>(nodeHeight_),
-                            static_cast<QWidget*>(nodeText_), static_cast<QWidget*>(nodeColor_)}) widget->setEnabled(enabled);
+                            static_cast<QWidget*>(nodeText_), static_cast<QWidget*>(nodeColor_),
+                            static_cast<QWidget*>(nodeFilled_)}) widget->setEnabled(enabled);
     if (!enabled) return;
     const QRectF rect = scene_.nodes[index].rect;
     const QSignalBlocker blockX(nodeX_);
@@ -261,12 +271,15 @@ void MainWindow::refreshInspector() {
     const QSignalBlocker blockWidth(nodeWidth_);
     const QSignalBlocker blockHeight(nodeHeight_);
     const QSignalBlocker blockText(nodeText_);
+    const QSignalBlocker blockFilled(nodeFilled_);
     nodeX_->setValue(static_cast<int>(rect.x()));
     nodeY_->setValue(static_cast<int>(rect.y()));
     nodeWidth_->setValue(static_cast<int>(rect.width()));
     nodeHeight_->setValue(static_cast<int>(rect.height()));
     nodeText_->setText(scene_.nodes[index].text);
     nodeColor_->setText(QString("Color: %1").arg(scene_.nodes[index].color.name(QColor::HexRgb)));
+    nodeFilled_->setChecked(scene_.nodes[index].filled);
+    nodeFilled_->setEnabled(scene_.nodes[index].type != "label");
 }
 
 void MainWindow::saveScene() {

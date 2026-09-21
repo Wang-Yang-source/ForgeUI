@@ -15,6 +15,7 @@ struct SceneNode {
     QRectF rect;
     QString text;
     QColor color = QColor(0, 220, 255);
+    bool filled = true;
 };
 
 struct SceneAnimation {
