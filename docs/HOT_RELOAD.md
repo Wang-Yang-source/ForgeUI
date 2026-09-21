@@ -26,6 +26,12 @@ capacity `forgeui::esp32::SceneReceiver` from
 `examples/esp32/SceneReceiver.h`. It only exposes a scene after the complete
 packet and CRC32 have been validated.
 
+For rendering, wrap the receiver in `DoubleSceneStore`. The transport task
+feeds bytes into the inactive slot; the display task calls
+`commitAtFrameBoundary()` after the current frame has finished. This keeps the
+active scene stable during upload and makes the swap atomic from the renderer's
+point of view.
+
 The current packet is little-endian and has this layout:
 
 ```text

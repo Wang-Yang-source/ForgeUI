@@ -24,6 +24,13 @@ int main() {
     receiver.consume();
     assert(!receiver.ready());
 
+    forgeui::esp32::DoubleSceneStore<128> store;
+    assert(store.feed(packet, forgeui::protocol::encodedSize(sizeof(text) - 1)));
+    assert(store.pending() && store.activeSize() == 0);
+    assert(store.commitAtFrameBoundary());
+    assert(!store.pending() && store.activeRevision() == 42);
+    assert(std::memcmp(store.activePayload(), text, sizeof(text) - 1) == 0);
+
     packet[forgeui::protocol::headerSize] ^= 1u;
     assert(!forgeui::protocol::decodeScene(packet, forgeui::protocol::encodedSize(sizeof(text) - 1), view));
     return 0;

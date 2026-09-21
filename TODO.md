@@ -98,7 +98,7 @@ and 128×64 panels must remain lightweight.
 - [x] Validate packet version, payload length, and CRC32
 - [ ] Add ACK/NACK and error messages
 - [ ] Add scene revision conflict handling
-- [ ] Add double-buffered scene replacement at frame boundaries
+- [x] Add double-buffered scene replacement at frame boundaries
 - [ ] Add serial auto-detection and reconnect
 - [ ] Add Wi-Fi transport over WebSocket or HTTP
 - [ ] Add LittleFS asset upload by content hash
