@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include "Input.h"
+
 namespace forgeui {
 
 struct Rect {
@@ -16,6 +18,7 @@ public:
 
     virtual void update(uint32_t now) = 0;
     virtual void draw(CanvasT& canvas) const = 0;
+    virtual bool handle(const InputEvent&) { return false; }
 
     Rect bounds() const { return bounds_; }
     void setBounds(Rect bounds) { bounds_ = bounds; }

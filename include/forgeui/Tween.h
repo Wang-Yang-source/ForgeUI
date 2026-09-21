@@ -27,7 +27,9 @@ public:
         uint32_t eased = t;
         if (easing_ == Easing::Smoothstep) eased = (t * t * (765u - 2u * t)) / 65025u;
         if (easing_ == Easing::EaseOut) eased = 255u - ((255u - t) * (255u - t) / 255u);
-        return static_cast<uint8_t>(from_ + ((to_ - from_) * eased) / 255u);
+        const int32_t delta = static_cast<int32_t>(to_) - static_cast<int32_t>(from_);
+        const int32_t result = static_cast<int32_t>(from_) + (delta * static_cast<int32_t>(eased)) / 255;
+        return static_cast<uint8_t>(std::clamp(result, 0, 255));
     }
 
     bool active(uint32_t now) const { return active_ && now - started_ < duration_; }
