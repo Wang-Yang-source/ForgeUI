@@ -42,6 +42,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     auto* save = new QPushButton("Save scene", panel);
     auto* load = new QPushButton("Load scene", panel);
     auto* exportForgeUi = new QPushButton("Export ForgeUI C++", panel);
+    auto* exportLvgl = new QPushButton("Export LVGL C", panel);
+    auto* exportSlint = new QPushButton("Export Slint", panel);
     auto* ports = new QComboBox(panel);
     ports->addItems(link_.ports());
     auto* connectButton = new QPushButton("Connect serial", panel);
@@ -52,6 +54,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     layout->addWidget(save);
     layout->addWidget(load);
     layout->addWidget(exportForgeUi);
+    layout->addWidget(exportLvgl);
+    layout->addWidget(exportSlint);
     layout->addSpacing(12);
     layout->addWidget(ports);
     layout->addWidget(connectButton);
@@ -95,6 +99,18 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
         QFile file(path);
         if (file.open(QIODevice::WriteOnly | QIODevice::Text))
             file.write(forgeui_studio::exportForgeUiSource(scene_).toUtf8());
+    });
+    auto exportText = [this](const QString& title, const QString& filter, const QString& source) {
+        const QString path = QFileDialog::getSaveFileName(this, title, {}, filter);
+        if (path.isEmpty()) return;
+        QFile file(path);
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) file.write(source.toUtf8());
+    };
+    connect(exportLvgl, &QPushButton::clicked, this, [this, exportText] {
+        exportText("Export LVGL C", "C source (*.c)", forgeui_studio::exportLvglSource(scene_));
+    });
+    connect(exportSlint, &QPushButton::clicked, this, [this, exportText] {
+        exportText("Export Slint", "Slint source (*.slint)", forgeui_studio::exportSlintSource(scene_));
     });
     connect(connectButton, &QPushButton::clicked, this, [this, ports] {
         if (!link_.open(ports->currentText())) QMessageBox::warning(this, "ForgeUI", "Unable to open serial port");

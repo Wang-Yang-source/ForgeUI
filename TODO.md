@@ -18,6 +18,7 @@ and 128×64 panels must remain lightweight.
 - [x] Custom canvas size and nearest-pixel preview
 - [x] JSON scene save/load
 - [x] Basic ForgeUI C++ scene export
+- [x] Basic LVGL C and Slint scene export
 - [x] Serial scene packet sender
 - [x] Shared FUI1 packet codec and CRC32 validation
 - [x] Allocation-free ESP32 transport receiver
@@ -108,8 +109,8 @@ and 128×64 panels must remain lightweight.
 
 - [x] Export compact ForgeUI C++ scene code
 - [ ] Export static RGB565 and monochrome assets
-- [ ] Export LVGL C/C++ widget trees
-- [ ] Export Slint scene files or generated bindings where licensing permits
+- [x] Export LVGL C/C++ widget trees
+- [x] Export Slint scene files or generated bindings where licensing permits
 - [ ] Export a standalone ESP-IDF example project
 - [ ] Export an Arduino/PlatformIO example project
 - [ ] Add generated-code version metadata
