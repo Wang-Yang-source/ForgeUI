@@ -7,8 +7,10 @@
 #include <QFileDialog>
 #include <QJsonDocument>
 #include <QLabel>
+#include <QLineEdit>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QSignalBlocker>
 #include <QSpinBox>
 #include <QSplitter>
 #include <QVBoxLayout>
@@ -50,6 +52,28 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     layout->addWidget(ports);
     layout->addWidget(connectButton);
     layout->addWidget(push);
+    layout->addSpacing(12);
+    selectedLabel_ = new QLabel("No node selected", panel);
+    layout->addWidget(selectedLabel_);
+    auto makeSpin = [panel](int value) {
+        auto* spin = new QSpinBox(panel);
+        spin->setRange(-4096, 4096);
+        spin->setValue(value);
+        return spin;
+    };
+    nodeX_ = makeSpin(0);
+    nodeY_ = makeSpin(0);
+    nodeWidth_ = makeSpin(0);
+    nodeHeight_ = makeSpin(0);
+    layout->addWidget(new QLabel("X", panel)); layout->addWidget(nodeX_);
+    layout->addWidget(new QLabel("Y", panel)); layout->addWidget(nodeY_);
+    layout->addWidget(new QLabel("Width", panel)); layout->addWidget(nodeWidth_);
+    layout->addWidget(new QLabel("Height", panel)); layout->addWidget(nodeHeight_);
+    nodeText_ = new QLineEdit(panel);
+    nodeText_->setPlaceholderText("Label text");
+    layout->addWidget(nodeText_);
+    auto* remove = new QPushButton("Delete selected", panel);
+    layout->addWidget(remove);
     layout->addStretch();
 
     setCentralWidget(splitter);
@@ -66,10 +90,64 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
         if (!link_.pushScene(scene_.revision, scene_.payload()))
             QMessageBox::warning(this, "ForgeUI", "Connect to an ESP32 serial port first");
     });
+    preview_->onSelectionChanged = [this](int) { refreshInspector(); };
+    preview_->onSceneChanged = [this] { refreshInspector(); };
+    auto updateGeometry = [this] {
+        const int index = selectedIndex();
+        if (index < 0) return;
+        SceneNode& node = scene_.nodes[index];
+        node.rect.setX(nodeX_->value()); node.rect.setY(nodeY_->value());
+        node.rect.setWidth(nodeWidth_->value()); node.rect.setHeight(nodeHeight_->value());
+        ++scene_.revision;
+        refreshPreview();
+    };
+    connect(nodeX_, qOverload<int>(&QSpinBox::valueChanged), this, [updateGeometry](int) { updateGeometry(); });
+    connect(nodeY_, qOverload<int>(&QSpinBox::valueChanged), this, [updateGeometry](int) { updateGeometry(); });
+    connect(nodeWidth_, qOverload<int>(&QSpinBox::valueChanged), this, [updateGeometry](int) { updateGeometry(); });
+    connect(nodeHeight_, qOverload<int>(&QSpinBox::valueChanged), this, [updateGeometry](int) { updateGeometry(); });
+    connect(nodeText_, &QLineEdit::editingFinished, this, [this] {
+        const int index = selectedIndex();
+        if (index < 0) return;
+        scene_.nodes[index].text = nodeText_->text();
+        ++scene_.revision;
+        refreshPreview();
+    });
+    connect(remove, &QPushButton::clicked, this, [this] {
+        const int index = selectedIndex();
+        if (index < 0) return;
+        scene_.removeAt(index);
+        preview_->setSelectedIndex(-1);
+        refreshPreview();
+        refreshInspector();
+    });
     refreshPreview();
+    refreshInspector();
 }
 
 void MainWindow::refreshPreview() { preview_->setScene(&scene_); }
+
+int MainWindow::selectedIndex() const { return preview_ ? preview_->selectedIndex() : -1; }
+
+void MainWindow::refreshInspector() {
+    const int index = selectedIndex();
+    const bool enabled = index >= 0 && index < scene_.nodes.size();
+    selectedLabel_->setText(enabled ? scene_.nodes[index].id : "No node selected");
+    for (QWidget* widget : {static_cast<QWidget*>(nodeX_), static_cast<QWidget*>(nodeY_),
+                            static_cast<QWidget*>(nodeWidth_), static_cast<QWidget*>(nodeHeight_),
+                            static_cast<QWidget*>(nodeText_)}) widget->setEnabled(enabled);
+    if (!enabled) return;
+    const QRectF rect = scene_.nodes[index].rect;
+    const QSignalBlocker blockX(nodeX_);
+    const QSignalBlocker blockY(nodeY_);
+    const QSignalBlocker blockWidth(nodeWidth_);
+    const QSignalBlocker blockHeight(nodeHeight_);
+    const QSignalBlocker blockText(nodeText_);
+    nodeX_->setValue(static_cast<int>(rect.x()));
+    nodeY_->setValue(static_cast<int>(rect.y()));
+    nodeWidth_->setValue(static_cast<int>(rect.width()));
+    nodeHeight_->setValue(static_cast<int>(rect.height()));
+    nodeText_->setText(scene_.nodes[index].text);
+}
 
 void MainWindow::saveScene() {
     const QString path = QFileDialog::getSaveFileName(this, "Save ForgeUI scene", {}, "ForgeUI scene (*.json)");

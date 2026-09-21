@@ -81,3 +81,9 @@ void SceneModel::addBox() {
     nodes.append(node);
     ++revision;
 }
+
+void SceneModel::removeAt(int index) {
+    if (index < 0 || index >= nodes.size()) return;
+    nodes.removeAt(index);
+    ++revision;
+}

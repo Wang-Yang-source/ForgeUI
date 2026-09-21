@@ -26,4 +26,5 @@ public:
     QByteArray payload() const;
     void addLabel();
     void addBox();
+    void removeAt(int index);
 };
