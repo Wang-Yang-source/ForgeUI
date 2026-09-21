@@ -74,10 +74,12 @@ and 128×64 panels must remain lightweight.
 
 ## 5. Desktop editor
 
-- [ ] Replace the prototype preview with a selectable `QGraphicsView` canvas
-- [ ] Add drag, resize, snap-to-grid, and multi-select
+- [x] Replace the prototype preview with a selectable pixel canvas
+- [x] Add node selection, dragging, and deletion
+- [ ] Add resize handles, snap-to-grid, and multi-select
 - [ ] Add layers/tree panel
-- [ ] Add property inspector for geometry, colors, text, and styles
+- [x] Add basic property inspector for geometry and text
+- [ ] Add property inspector for colors and styles
 - [ ] Add color palette optimized for RGB565 and LED panels
 - [ ] Add font and image asset browser
 - [ ] Add animation timeline and keyframe editing
