@@ -1,0 +1,6 @@
+ForgeUI is source-available for personal, educational, maker, and other
+non-commercial use only. Commercial use requires prior written permission.
+
+ForgeUI is an independent implementation inspired by practical embedded OLED
+and LED UI patterns. It is not a copy of oled-ui-astra and does not include
+the upstream project's source files.
