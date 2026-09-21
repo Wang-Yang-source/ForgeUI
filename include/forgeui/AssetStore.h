@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 
@@ -28,9 +27,9 @@ public:
         if (!slot) slot = allocate(chunk.assetId);
         if (!slot || (chunk.offset == 0 && !begin(*slot, chunk))) return false;
         if (chunk.offset != 0 && slot->expected != chunk.assetCrc) return false;
-        if (chunk.offset + chunk.payloadSize > slot->totalSize) return false;
+        if (chunk.offset != slot->received || chunk.offset + chunk.payloadSize > slot->totalSize) return false;
         for (size_t i = 0; i < chunk.payloadSize; ++i) slot->bytes[chunk.offset + i] = chunk.payload[i];
-        slot->received = std::max(slot->received, static_cast<size_t>(chunk.offset + chunk.payloadSize));
+        slot->received += chunk.payloadSize;
         if (slot->received == slot->totalSize) {
             slot->committed = protocol::crc32(slot->bytes.data(), slot->totalSize) == slot->expected;
         }

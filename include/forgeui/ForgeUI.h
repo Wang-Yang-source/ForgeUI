@@ -11,6 +11,7 @@
 #include "Tween.h"
 #include "Timeline.h"
 #include "Typewriter.h"
+#include "Animation.h"
 #include "Component.h"
 #include "Input.h"
 #include "Layout.h"

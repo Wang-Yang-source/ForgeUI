@@ -60,6 +60,27 @@ int main() {
     assert(typewriter.configure(uneven, 4, 100));
     assert(typewriter.visible(190) == 1 && typewriter.visible(230) == 2);
 
+    int32_t animatedX = 0;
+    forgeui::Color animatedColor{0, 0, 0};
+    forgeui::AnimationTimeline<2, 4> keyframes;
+    const size_t xTrack = keyframes.addInt(animatedX, forgeui::AnimatedProperty::Position);
+    const size_t colorTrack = keyframes.addColor(animatedColor);
+    assert(xTrack != static_cast<size_t>(-1));
+    assert(keyframes.addKeyframe(xTrack, 0, 0) && keyframes.addKeyframe(xTrack, 500, 20));
+    assert(keyframes.addKeyframe(colorTrack, 0, forgeui::Color::black()) &&
+           keyframes.addKeyframe(colorTrack, 500, forgeui::Color::cyan()));
+    keyframes.start(100);
+    keyframes.update(350);
+    assert(animatedX > 0 && animatedX < 20 && animatedColor.g > 0);
+    keyframes.update(700);
+    assert(animatedX == 20 && animatedColor.b == 255 && keyframes.finished(xTrack));
+    forgeui::AnimationSchedule<4> schedule;
+    const size_t introClip = schedule.sequence(800);
+    schedule.delay(120);
+    const size_t parallelClip = schedule.parallel(300);
+    assert(schedule.clip(introClip).start == 0 && schedule.clip(parallelClip).start == 920);
+    assert(schedule.repeat(parallelClip) && schedule.pingPong(introClip));
+
     int32_t logoY = 0;
     int32_t typedChars = 0;
     forgeui::Timeline<4> intro;

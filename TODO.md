@@ -26,12 +26,12 @@ and 128×64 panels must remain lightweight.
 
 ## 1. Animation engine
 
-- [ ] Add `AnimationTrack` types for position, size, color, opacity, and text progress
-- [ ] Add keyframes and timeline markers
-- [ ] Add `Sequence`, `Parallel`, `Delay`, `Repeat`, and `PingPong` composition helpers
-- [ ] Add per-track completion state and cancellation
-- [ ] Add deterministic integer/fixed-point easing curves
-- [ ] Add typewriter animation with uneven, configurable character timing
+- [x] Add `AnimationTrack` types for position, size, color, opacity, and text progress
+- [x] Add keyframes and timeline markers
+- [x] Add `Sequence`, `Parallel`, `Delay`, `Repeat`, and `PingPong` composition helpers
+- [x] Add per-track completion state and cancellation
+- [x] Add deterministic integer/fixed-point easing curves
+- [x] Add typewriter animation with uneven, configurable character timing
 - [x] Add uneven-delay typewriter track primitive
 - [ ] Add dirty-region reporting for animated components
 - [x] Add animation golden tests for 2.5-second boot sequences
@@ -44,7 +44,7 @@ and 128×64 panels must remain lightweight.
 - [ ] Add dirty rectangle collection and region merging
 - [ ] Add optional double-buffer and partial-flush support
 - [x] Add bitmap and packed-pixel asset formats
-- [ ] Add compact bitmap-font renderer
+- [x] Add compact bitmap-font renderer
 - [ ] Add image clipping and nearest-neighbor scaling
 - [ ] Add focus navigation for buttons, lists, and encoder input
 - [ ] Add optional layout helpers: row, column, grid, and anchor
