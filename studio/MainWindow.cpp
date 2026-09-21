@@ -40,10 +40,27 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     layout->addWidget(width);
     layout->addWidget(height);
     auto* profile = new QComboBox(panel);
-    profile->addItem("Custom", QSize(52, 52));
-    profile->addItem("PixelPad 52x52", QSize(52, 52));
-    profile->addItem("OLED 128x64", QSize(128, 64));
-    profile->addItem("TFT 240x240", QSize(240, 240));
+    auto addProfile = [profile](const QString& name, QSize logical, QSize physical, int scale = 1) {
+        QVariantMap data;
+        data["logical"] = logical;
+        data["physical"] = physical;
+        data["scale"] = scale;
+        profile->addItem(name, data);
+    };
+    addProfile("Custom", {52, 52}, {52, 52});
+    addProfile("LED 52×52", {52, 52}, {52, 52});
+    addProfile("LED 104×104 (2×)", {52, 52}, {104, 104}, 2);
+    addProfile("LED 260×260 (5×)", {52, 52}, {260, 260}, 5);
+    addProfile("OLED 128×32", {128, 32}, {128, 32});
+    addProfile("OLED 128×64", {128, 64}, {128, 64});
+    addProfile("OLED 128×128", {128, 128}, {128, 128});
+    addProfile("TFT 128×160", {128, 160}, {128, 160});
+    addProfile("TFT 240×240", {240, 240}, {240, 240});
+    addProfile("TFT 240×320", {240, 320}, {240, 320});
+    addProfile("TFT 320×240", {320, 240}, {320, 240});
+    addProfile("TFT 320×480", {320, 480}, {320, 480});
+    addProfile("TFT 480×272", {480, 272}, {480, 272});
+    addProfile("TFT 800×480", {800, 480}, {800, 480});
     layout->addWidget(profile);
 
     auto* addLabel = new QPushButton("Add pixel label", panel);
@@ -117,9 +134,12 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     connect(height, &QSpinBox::valueChanged, this, [this](int value) { scene_.canvasSize.setHeight(value); refreshPreview(); });
     connect(profile, qOverload<int>(&QComboBox::currentIndexChanged), this, [this, profile, width, height](int index) {
         if (index == 0) return;
-        const QSize size = profile->itemData(index).toSize();
-        width->setValue(size.width());
-        height->setValue(size.height());
+        const QVariantMap data = profile->itemData(index).toMap();
+        const QSize logical = data.value("logical").toSize();
+        scene_.physicalSize = data.value("physical").toSize();
+        scene_.pixelScale = qMax(1, data.value("scale").toInt());
+        width->setValue(logical.width());
+        height->setValue(logical.height());
     });
     connect(addLabel, &QPushButton::clicked, this, [this] { scene_.addLabel(); refreshPreview(); });
     connect(addBox, &QPushButton::clicked, this, [this] { scene_.addBox(); refreshPreview(); });

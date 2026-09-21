@@ -29,6 +29,8 @@ struct SceneAnimation {
 class SceneModel {
 public:
     QSize canvasSize{52, 52};
+    QSize physicalSize{52, 52};
+    int pixelScale = 1;
     QVector<SceneNode> nodes;
     QVector<SceneAnimation> animations;
     quint32 revision = 1;

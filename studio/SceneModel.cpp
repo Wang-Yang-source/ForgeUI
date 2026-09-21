@@ -17,6 +17,9 @@ QJsonObject SceneModel::toJson() const {
     root["revision"] = static_cast<qint64>(revision);
     root["width"] = canvasSize.width();
     root["height"] = canvasSize.height();
+    root["physical_width"] = physicalSize.width();
+    root["physical_height"] = physicalSize.height();
+    root["pixel_scale"] = pixelScale;
 
     QJsonArray items;
     for (const SceneNode& node : nodes) {
@@ -91,6 +94,8 @@ bool SceneModel::fromJson(const QJsonObject& root, QString* error) {
     }
 
     canvasSize = QSize(width, height);
+    physicalSize = QSize(root.value("physical_width").toInt(width), root.value("physical_height").toInt(height));
+    pixelScale = qMax(1, root.value("pixel_scale").toInt(1));
     nodes = parsed;
     animations = parsedAnimations;
     revision = static_cast<quint32>(root.value("revision").toInteger(1));
